@@ -34,7 +34,48 @@ namespace MessageEncoderTests
             Assert.Equal(originalMessage.headers, decodedMessage.headers);
             Assert.Equal(originalMessage.payload, decodedMessage.payload);
         }
+        [Fact]
+        public void Encode_Decode_BigHeaders_ValidData__ReturnsOriginalMessage()
+        {
+            // Arrange
+            var codec = new SimpleMessageCodec();
+            var originalMessage = new Message()
+            {
+                headers = new Dictionary<string, string> {
+                { new string('k', 1023), new string('v', 1023) }
+            },
+                payload = new byte[] { 0x01, 0x02, 0x03, 0x04, 0x05 }
+            };
 
+            // Act
+            byte[] encodedMessage = codec.Encode(originalMessage);
+            Message decodedMessage = codec.Decode(encodedMessage);
+
+            // Assert
+            Assert.Equal(originalMessage.headers, decodedMessage.headers);
+            Assert.Equal(originalMessage.payload, decodedMessage.payload);
+        }
+        [Fact]
+        public void Encode_Decode_BigPayload_ValidData__ReturnsOriginalMessage()
+        {
+            // Arrange
+            var codec = new SimpleMessageCodec();
+            var originalMessage = new Message()
+            {
+                headers = new Dictionary<string, string> {
+                { new string('k', 1023), new string('v', 1023) }
+            },
+                payload = new byte[256 * 1024]
+            };
+            new Random().NextBytes(originalMessage.payload);
+            // Act
+            byte[] encodedMessage = codec.Encode(originalMessage);
+            Message decodedMessage = codec.Decode(encodedMessage);
+
+            // Assert
+            Assert.Equal(originalMessage.headers, decodedMessage.headers);
+            Assert.Equal(originalMessage.payload, decodedMessage.payload);
+        }
         [Fact]
         public void Encode_InvalidHeaderCount_ThrowsArgumentException()
         {

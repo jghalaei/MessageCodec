@@ -30,13 +30,14 @@ namespace MessageCodec
 
         public Message Decode(byte[] data)
         {
-            Message message = new Message();
+
             using (MemoryStream ms = new MemoryStream(data))
             {
                 using (BinaryReader reader = new BinaryReader(ms))
                 {
                     ReadAndValidateVersion(reader);
                     ReadAndValidateChecksum(data);
+                    Message message = new Message();
                     message.headers = ReadHeaders(reader);
                     message.payload = ReadPayload(reader);
                     return message;
@@ -44,28 +45,23 @@ namespace MessageCodec
             }
 
         }
-
         private void WriteHeaders(Message message, BinaryWriter writer)
         {
             if (message.headers.Count > MAX_HEADER_COUNT)
-            {
                 throw new ArgumentException($"Header count can not be more than {MAX_HEADER_COUNT}");
-            }
 
             writer.Write((byte)message.headers.Count);
-            foreach (var kvp in message.headers)
+            foreach (var header in message.headers)
             {
-                byte[] keyBytes = Encoding.ASCII.GetBytes(kvp.Key);
-                byte[] valueBytes = Encoding.ASCII.GetBytes(kvp.Value);
+                byte[] keyBytes = Encoding.ASCII.GetBytes(header.Key);
+                byte[] valueBytes = Encoding.ASCII.GetBytes(header.Value);
 
                 if (keyBytes.Length > MAX_HEADER_LENGTH || valueBytes.Length > MAX_HEADER_LENGTH)
-                {
                     throw new ArgumentException($"Header key or value length can not be more than {MAX_HEADER_LENGTH} bytes");
-                }
 
-                writer.Write((byte)keyBytes.Length);
+                writer.Write((ushort)keyBytes.Length);
                 writer.Write(keyBytes);
-                writer.Write((byte)valueBytes.Length);
+                writer.Write((ushort)valueBytes.Length);
                 writer.Write(valueBytes);
             }
         }
@@ -73,9 +69,8 @@ namespace MessageCodec
         private void WritePayload(Message message, BinaryWriter writer)
         {
             if (message.payload.Length > MAX_PAYLOAD_LENGTH)
-            {
                 throw new ArgumentException($"Payload length can not be more than {MAX_PAYLOAD_LENGTH} bytes");
-            }
+
             writer.Write((int)message.payload.Length);
             writer.Write(message.payload);
         }
@@ -101,9 +96,9 @@ namespace MessageCodec
 
             for (int i = 0; i < headerCount; i++)
             {
-                int keyLength = reader.ReadByte();
+                ushort keyLength = reader.ReadUInt16();
                 byte[] keyBytes = reader.ReadBytes(keyLength);
-                int valueLength = reader.ReadByte();
+                ushort valueLength = reader.ReadUInt16();
                 byte[] valueBytes = reader.ReadBytes(valueLength);
 
                 var key = Encoding.ASCII.GetString(keyBytes);
