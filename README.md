@@ -15,8 +15,8 @@ Key features of the codec include:
 
 ### High-Level Structure Overview
 
-1. Version (1 byte): To indicate the version of meesage's schema
-2. Header Count (1 byte): To represent up to 63 headers.
+1. Version (1 Byte): To indicate the version of meesage's schema
+2. Header Count (1 Byte): To represent up to 63 headers.
 3. Headers:
    - Header Name Length (2 Bytes): Indicate length of Header Name.
    - Header Name (n Bytes): ASCII encoded string.
