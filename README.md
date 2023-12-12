@@ -73,7 +73,7 @@ The codec will check the following errors and in case of failing throws Argument
 3. Payload size exceeds the limit of 256KiB.
 4. Empty Message: Both Headers and payload are empty.
 
-### Decoding
+#### Decoding
 
 1. Invalid Version: The message version is not supported.
 2. Checksum Mismatch: Indicating that the message is corrupted.
