@@ -10,6 +10,8 @@ namespace MessageCodec
         private const int MAX_PAYLOAD_LENGTH = 256 * 1024;
         public byte[] Encode(Message message)
         {
+            if (message.headers.Count == 0 && message.payload.Length == 0)
+                throw new ArgumentException("Message is empty");
             using (MemoryStream ms = new MemoryStream())
             {
                 using (BinaryWriter writer = new BinaryWriter(ms))

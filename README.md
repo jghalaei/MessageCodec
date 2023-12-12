@@ -1,4 +1,4 @@
-# Simple Binary Encoder
+# Simple Binary Message Codec
 
 ### Description
 
@@ -77,4 +77,4 @@ The codec will check the following errors and in case of failing throws Argument
 
 1. Invalid Version: The message version is not supported.
 2. Checksum Mismatch: Indicating that the message is corrupted.
-3. Invalid Checksum: Indicating that the message is corrupted.
+3. Invalid Data format: Indicating that the message is corrupted. An encoded message should contain at least 4 bytes (Version, Header count,Payload length, Checksum)

@@ -89,7 +89,37 @@ namespace MessageEncoderTests
             var exception = Assert.Throws<ArgumentException>(() => codec.Encode(messageWithLargeHeader));
             Assert.Contains("Header key or value length", exception.Message);
         }
+        [Fact]
+        public void Encode_InvalidPayloadLength_ThrowsArgumentException()
+        {
+            // Arrange
+            var codec = new SimpleMessageCodec();
+            var messageWithLargePayload = new Message
+            {
+                headers = new Dictionary<string, string>(),
+                payload = new byte[257 * 1024]
+            };
+            // Act / Assert
+            var exception = Assert.Throws<ArgumentException>(() => codec.Encode(messageWithLargePayload));
+            Assert.Contains("Payload length", exception.Message);
 
+        }
+        [Fact]
+        public void Encode_EmptyMessage_ThrowsException()
+        {
+            // Arrange
+            var codec = new SimpleMessageCodec();
+            var emptyMessage = new Message
+            {
+                headers = new Dictionary<string, string>(),
+                payload = new byte[] { }
+            };
+
+            // Act / Assert
+            var exception = Assert.Throws<ArgumentException>(() => codec.Encode(emptyMessage));
+            Assert.Contains("Message is empty", exception.Message);
+
+        }
         [Fact]
         public void Decode_InvalidVersion_ThrowsArgumentException()
         {
@@ -157,33 +187,13 @@ namespace MessageEncoderTests
         {
             // Arrange
             var codec = new SimpleMessageCodec();
-            var invalidData = new byte[] { 0x01, 0x00 }; // Invalid, as there is no checksum byte
+            var invalidData = new byte[] { 0x01, 0x00, 0x00 }; // Invalid, as there is no checksum byte
 
             // Act & Assert
             Assert.Throws<ArgumentException>(() => codec.Decode(invalidData));
         }
 
-        [Fact]
-        public void Encode_EmptyMessage_ValidEncoding()
-        {
-            // Arrange
-            var codec = new SimpleMessageCodec();
-            var emptyMessage = new Message
-            {
-                headers = new Dictionary<string, string>(),
-                payload = new byte[] { }
-            };
 
-            // Act
-            var encodedMessage = codec.Encode(emptyMessage);
-
-            // Assert
-            Assert.True(encodedMessage.Length > 2); // Account for version and checksum
-            Assert.Equal(1, encodedMessage[0]); // Version byte
-            Assert.Equal(emptyMessage.headers.Count, encodedMessage[1]); // Header count
-                                                                         // Checksum is at the end and is not zero since it includes the version and header count
-            Assert.NotEqual(0, encodedMessage[encodedMessage.Length - 1]);
-        }
 
         [Fact]
         public void Encode_Decode_WithSpecialCharactersInHeaders_ReturnsOriginalMessage()
