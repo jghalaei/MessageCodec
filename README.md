@@ -1,22 +1,17 @@
 # Simple Binary Encoder
 
-## Ambition:
+## Description
 
-### Design and implement a simple binary message encoding scheme to be used in a signaling protocol.
+This project implements a simple binary message encoding and decoding scheme tailored for a real-time communication signaling protocol. The codec is designed to handle messages with a variable number of ASCII-encoded name-value pair headers and a binary payload.
 
-## Assumptions:
+Key features of the codec include:
 
-- A message can contain a variable number of headers, and a binary payload.
-
-- The headers are name-value pairs, where both names and values are ASCII-encoded strings.
-
-- Header names and values are limited to 1023 bytes (independently).
-
-- A message can have max 63 headers.
-
-- The message payload is limited to 256 KiB.
-
-- Message can not be empty. At least one header or payload should be exist.
+- Support for up to 63 headers per message.
+- Header names and values are each limited to 1023 bytes.
+- Support for a message payload of up to 256 KiB.
+- Straightforward serialization and deserialization of message objects.
+- Checksum for basic error detection.
+- Versioning for openness to future changes
 
 ## High-Level Structure Overview
 
@@ -36,6 +31,10 @@
 #### 5. Payload (n Bytes): The actual binary payload data
 
 #### 6. Checksum (1 Byte): to verify the correctness of message.
+
+## Message Structure Example:
+
+    [Version (1B)][HeaderCount(1B)][HeaderNameLength(2B)][HeaderName(nB)][HeaderValueLength(2B)][HeaderValue(nB)]...[PayloadSize(4B)][PayloadData(nB)][Checksum(1B)]
 
 ## Design Rationale
 
@@ -69,18 +68,20 @@ Using fixed-length fields for the header count and lengths allows for simpler pa
 - The current structure allows for extending the protocol with more headers or larger payloads without changing the overall schema.
 - For applying more changes we can use the versioning feature, provided by adding the version on first of message.
 
-## Message Structure Example:
+## Assumptions:
 
-    [Version (1B)][HeaderCount(1B)][HeaderNameLength(2B)][HeaderName(nB)][HeaderValueLength(2B)][HeaderValue(nB)]...[PayloadSize(4B)][PayloadData(nB)][Checksum(1B)]
+- Message can not be empty. At least one header or payload should be exist.
 
-## Potential exceptions:
+## Error Handling:
 
-### During Encoding
+The codec will check the following errors and in case of failing throws ArgumentException with proper message.
+
+### Encoding
 
 1. Invalid Header Count: Header counts more than 63.
 2. Invalid Header Length: Header name or value length exceed the limit of 1023.
 3. Payload size exceeds the limit of 256KiB.
-4. EmptyMessage: Both Headers and payload are empty.
+4. Empty Message: Both Headers and payload are empty.
 
 ### Decoding
 
