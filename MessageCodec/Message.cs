@@ -1,9 +1,4 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-
-namespace MessageEncoder
+namespace MessageCodec
 {
     public class Message
     {
@@ -14,6 +9,6 @@ namespace MessageEncoder
             headers = new Dictionary<string, string>();
             payload = new byte[0];
         }
-    
+
     }
 }

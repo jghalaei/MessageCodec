@@ -23,7 +23,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\MessageEncoder\MessageEncoder.csproj" />
+    <ProjectReference Include="..\MessageCodec\MessageCodec.csproj" />
   </ItemGroup>
 
 </Project>
