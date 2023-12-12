@@ -10,6 +10,8 @@ namespace MessageCodec
         private const int MAX_PAYLOAD_LENGTH = 256 * 1024;
         public byte[] Encode(Message message)
         {
+            if (message == null)
+                throw new ArgumentException("Message is null");
             if (message.headers.Count == 0 && message.payload.Length == 0)
                 throw new ArgumentException("Message is empty");
             using (MemoryStream ms = new MemoryStream())
@@ -30,7 +32,8 @@ namespace MessageCodec
 
         public Message Decode(byte[] data)
         {
-
+            if (data == null || data.Length == 0)
+                throw new ArgumentException("Data is empty");
             using (MemoryStream ms = new MemoryStream(data))
             {
                 using (BinaryReader reader = new BinaryReader(ms))

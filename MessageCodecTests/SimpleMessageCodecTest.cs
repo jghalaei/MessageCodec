@@ -162,6 +162,17 @@ namespace MessageEncoderTests
 
         }
         [Fact]
+        public void Encode_NullMessage_ThrowsException()
+        {
+            // Arrange
+            var codec = new SimpleMessageCodec();
+            Message message = null;
+            // Act / Assert
+            var exception = Assert.Throws<ArgumentException>(() => codec.Encode(message));
+            Assert.Contains("Message is null", exception.Message);
+
+        }
+        [Fact]
         public void Decode_InvalidVersion_ThrowsArgumentException()
         {
             // Arrange
@@ -234,7 +245,26 @@ namespace MessageEncoderTests
             Assert.Throws<ArgumentException>(() => codec.Decode(invalidData));
         }
 
+        [Fact]
+        public void Decode_EmptyData_ThrowsException()
+        {
+            // Arrange
+            var codec = new SimpleMessageCodec();
+            var invalidData = new byte[] { }; // just empty data
 
+            // Act & Assert
+            Assert.Throws<ArgumentException>(() => codec.Decode(invalidData));
+        }
+        [Fact]
+        public void Decode_NullData_ThrowsException()
+        {
+            // Arrange
+            var codec = new SimpleMessageCodec();
+            Byte[] invalidData = null; // just null data
+
+            // Act & Assert
+            Assert.Throws<ArgumentException>(() => codec.Decode(invalidData));
+        }
 
         [Fact]
         public void Encode_Decode_WithSpecialCharactersInHeaders_ReturnsOriginalMessage()
