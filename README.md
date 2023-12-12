@@ -58,11 +58,11 @@ Using fixed-length fields for the header count and lengths allows for simpler pa
 - The current structure allows for extending the protocol with more headers or larger payloads without changing the overall schema.
 - For applying more changes we can use the versioning feature, provided by adding the version on first of message.
 
-#### Assumptions:
+### Assumptions:
 
 - Message can not be empty. At least one header or payload should be exist.
 
-#### Error Handling:
+### Error Handling:
 
 The codec will check the following errors and in case of failing throws ArgumentException with proper message.
 
